@@ -1,7 +1,7 @@
 const express = require('express')
 const { User, Show } = require('../models/index.js')
 const router = express.Router()
-
+const { check, validationResult} = require('express-validator')
 
 // GET/users * Gets all users
 // Slash means slash users if we did /users here then it would  bring back users/users
@@ -59,6 +59,24 @@ router.put('/:userId/shows/:showId', async (req,res) => {
     await user.addShow(show)
     res.status(204).send()   // 204 means no content
 })
+
+// POST a new user 
+
+router.post('/', [check("username").isEmail().trim()], async (req,res) => {
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()) {
+        res.json({error: errors.array()});
+        return;
+    }
+   
+    const newUser = req.body;
+
+    const createdNewUser = await User.create(newUser);
+
+    res.status(201).json(createdNewUser);
+})
+
 
 
 
