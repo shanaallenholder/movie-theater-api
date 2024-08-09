@@ -1,6 +1,7 @@
 const express = require('express')
 const { User, Show } = require('../models/index.js')
 const router = express.Router()
+const { check, validationResult} = require('express-validator')
 
 // GET all shows * Get/shows
 // GET shows of a particular genre (genre in `req.query`)
@@ -21,7 +22,6 @@ router.get("/" , async (req,res) => {
     const allShows = await Show.findAll()
     res.status(200).send(allShows)
 })
-
 
 
 // GET one Show by show Id  * Get/shows/:showId
@@ -69,6 +69,25 @@ router.get("/:showId/users" , async (req,res) => {
 
     
 })
+
+// POST a show
+
+router.post('/',  [check('title').isLength({ min: 5, max:25}).trim()],
+ async (req,res) => {
+
+    const errors = validationResult(req);
+
+    if(!errors.isEmpty()){
+        res.json({error: errors.array});
+        return;
+    }
+
+    const newShow = req.body;
+    const createdNewShow = await Show.create(newShow)
+
+    res.status(201).json(createdNewShow);
+}
+);
 
 // DELETE a show * Delete/shows/:showId
 router.delete("/:showId", async(req,res) => {
