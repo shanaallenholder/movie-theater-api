@@ -5,7 +5,7 @@ const showsRouter = require('./routes/shows.js')
 const app = express()
 
 //WRITE ROUTES
-app.use(express())
+app.use(express.json())
 app.use('/users', usersRouter)
 app.use('/shows', showsRouter)
 
